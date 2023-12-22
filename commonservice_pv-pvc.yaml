@@ -1,0 +1,35 @@
+# PersistentVolume (PV) for commonservice
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  namespace: dev
+  name: commonservice-pv
+spec:
+  capacity:
+    storage: 1Gi  # Specify the desired storage capacity
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce  # This allows the volume to be mounted as read-write by a single node
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: slow
+  mountOptions:
+    - hard
+    - nfsvers=4.1
+  nfs:
+    path: "/opt/Dev/deploy-src/mannit-commonservice/target"  # Replace with the actual path on your host machine
+    server: 128.140.108.46
+
+---
+# PersistentVolumeClaim (PVC) for commonservice
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  namespace: dev
+  name: commonservice-pv-claim
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: slow  # Specify the storage class
+  resources:
+    requests:
+      storage: 1Gi

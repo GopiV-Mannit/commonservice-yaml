@@ -1,0 +1,60 @@
+# Updated commonservice Deployment YAML
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: dev
+  name: commonservice
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: commonservice
+  template:
+    metadata:
+      labels:
+        name: commonservice
+        app: commonservice
+        version: 1.0.0
+    spec:
+      nodeName: mannit-4gb-nbg1-1
+      containers:
+      - args:
+        - sh
+        - -c
+        - cd /usr/src/app && java -jar commonservice-0.0.1-SNAPSHOT.jar
+        image: gopivijayan/commonserviceimg_3  # Replace with your actual Docker image name
+        name: commonservice
+        ports:
+        - containerPort: 8080
+          name: commonsvc-1
+        resources:
+          requests:
+            cpu: 300m
+            memory: 200Mi
+        volumeMounts:
+        - mountPath: /usr/src/app
+          name: commonservice-pv-claim
+        workingDir: /usr/src/app
+      restartPolicy: Always
+      volumes:
+      - name: commonservice-pv-claim
+        persistentVolumeClaim:
+          claimName: commonservice-pv-claim
+
+---
+# Service for commonservice
+
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: dev
+  name: commonservice
+spec:
+  type: NodePort
+  ports:
+  - name: "commonsvc"
+    port: 8080
+    targetPort: 8080
+  selector:
+    app: commonservice

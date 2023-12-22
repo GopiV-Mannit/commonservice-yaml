@@ -1,0 +1,19 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: commonservice-ingress
+  namespace: dev
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: broadcastmessage.mannit.co  # Replace with your actual domain for emessenger
+    http:
+      paths:
+      - path: /mannit
+        pathType: Prefix
+        backend:
+          service:
+            name: commonservice
+            port:
+              number: 8080
+
